@@ -39,11 +39,11 @@ The Agri-Energy Connect Platform is designed to bridge the gap between agricultu
 1. **Clone the Repository**
    ```
    git clone <repository-url>
-   cd ST10122162_Agri_Energy_Connect_Platform
+   cd ST10122161_Agri_Energy_Connect_Platform
    ```
 
 2. **Open the Solution**
-   - Open `ST10122162_Agri_Energy_Connect_Platform.sln` in Visual Studio
+   - Open `ST10122161_Agri_Energy_Connect_Platform.sln` in Visual Studio
 
 3. **Update the Database**
    - Open the Package Manager Console in Visual Studio
