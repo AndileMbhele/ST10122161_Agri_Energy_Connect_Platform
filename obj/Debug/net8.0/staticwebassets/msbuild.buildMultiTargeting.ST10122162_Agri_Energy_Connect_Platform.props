@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\ST10122162_Agri_Energy_Connect_Platform.props" />
+</Project>

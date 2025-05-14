@@ -1,0 +1,60 @@
+@model ST10122162_Agri_Energy_Connect_Platform.Models.Product
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ST10122162_Agri_Energy_Connect_Platform.Models.ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Delete Product";
+    var isEmployee = User.IsInRole("Employee");
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="h3 mb-0">Delete Product</h1>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p>Are you sure you want to delete this product?</p>
+                    </div>
+                    
+                    <dl class="row">
+                        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+                        
+                        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Category)</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.Category)</dd>
+                        
+                        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ProductionDate)</dt>
+                        <dd class="col-sm-9">@Model.ProductionDate.ToShortDateString()</dd>
+                        
+                        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Quantity)</dt>
+                        <dd class="col-sm-9">@Model.Quantity @Model.Unit</dd>
+                        
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+                            <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+                        }
+                        
+                        @if (isEmployee)
+                        {
+                            <dt class="col-sm-3">Farm</dt>
+                            <dd class="col-sm-9">@(Model.Farmer?.FarmName ?? "Unknown")</dd>
+                        }
+                    </dl>
+                    
+                    <form asp-action="Delete" class="mt-4">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

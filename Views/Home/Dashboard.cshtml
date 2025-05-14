@@ -1,0 +1,342 @@
+@model ST10122162_Agri_Energy_Connect_Platform.ViewModels.DashboardViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ST10122162_Agri_Energy_Connect_Platform.Models.ApplicationUser> SignInManager
+@inject UserManager<ST10122162_Agri_Energy_Connect_Platform.Models.ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var user = await UserManager.GetUserAsync(User);
+    var isFarmer = User.IsInRole("Farmer");
+    var isEmployee = User.IsInRole("Employee");
+}
+
+<div class="dashboard-header text-center py-4 px-3 mb-4">
+    <div class="container">
+        <h1 class="dashboard-welcome display-4">Welcome to Agri-Energy Connect</h1>
+        <p class="dashboard-subtitle lead">Connecting farmers and energy markets for a sustainable future</p>
+    </div>
+</div>
+
+<div class="container">
+
+    @if (isFarmer)
+    {
+        <div class="row mb-4">
+            <div class="col-lg-4">
+                @if (Model.Farmer != null)
+                {
+                    <div class="dashboard-card farmer-info">
+                        <h3><i class="fas fa-tractor me-2"></i>@Model.Farmer.FarmName</h3>
+                        <p><i class="fas fa-map-marker-alt me-2"></i>@Model.Farmer.Address</p>
+                        <p><i class="fas fa-phone me-2"></i>@Model.Farmer.ContactNumber</p>
+                        <p><i class="fas fa-calendar-alt me-2"></i>Registered: @Model.Farmer.RegistrationDate.ToShortDateString()</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Your account is not linked to a farm. Please contact an employee for assistance.
+                    </div>
+                }
+
+                <div class="dashboard-card">
+                    <div class="dashboard-stat dashboard-stat-success">
+                        <div class="dashboard-stat-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="dashboard-stat-value">@Model.TotalProducts</div>
+                        <div class="dashboard-stat-label">Total Products</div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <a asp-controller="Products" asp-action="Create" class="btn btn-success action-btn action-btn-success">
+                        <i class="fas fa-plus me-2"></i>Add New Product
+                    </a>
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-primary action-btn action-btn-primary">
+                        <i class="fas fa-list me-2"></i>View All Products
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="dashboard-card">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="mb-0"><i class="fas fa-history me-2"></i>Recent Products</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (Model.RecentProducts != null && Model.RecentProducts.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var product in Model.RecentProducts)
+                                {
+                                    <div class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="mb-1">@product.Name</h5>
+                                                <div>
+                                                    <span class="product-category category-@product.Category.ToLower()">@product.Category</span>
+                                                    <small class="text-muted ms-2">
+                                                        <i class="fas fa-calendar me-1"></i>@product.ProductionDate.ToShortDateString()
+                                                    </small>
+                                                    <small class="text-muted ms-2">
+                                                        <i class="fas fa-weight-hanging me-1"></i>@product.Quantity @product.Unit
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="btn btn-sm btn-outline-info me-1">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="p-4 text-center">
+                                <i class="fas fa-seedling fa-3x text-muted mb-3"></i>
+                                <p>You haven't added any products yet.</p>
+                                <a asp-controller="Products" asp-action="Create" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Add Your First Product
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="dashboard-card mt-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0"><i class="fas fa-chart-line me-2"></i>Quick Stats</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <div class="p-3">
+                                    <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
+                                    <h4>@DateTime.Now.ToString("MMM yyyy")</h4>
+                                    <p class="text-muted">Current Month</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="p-3">
+                                    <i class="fas fa-box fa-2x text-primary mb-2"></i>
+                                    <h4>@Model.TotalProducts</h4>
+                                    <p class="text-muted">Active Products</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="p-3">
+                                    <i class="fas fa-sync-alt fa-2x text-info mb-2"></i>
+                                    <h4>@(Model.RecentProducts?.Count() ?? 0)</h4>
+                                    <p class="text-muted">Recent Updates</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (isEmployee)
+    {
+        <div class="row mb-4">
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="dashboard-card">
+                    <div class="dashboard-stat dashboard-stat-success">
+                        <div class="dashboard-stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="dashboard-stat-value">@Model.TotalFarmers</div>
+                        <div class="dashboard-stat-label">Total Farmers</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="dashboard-card">
+                    <div class="dashboard-stat dashboard-stat-primary">
+                        <div class="dashboard-stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="dashboard-stat-value">@Model.TotalProducts</div>
+                        <div class="dashboard-stat-label">Total Products</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="dashboard-card">
+                    <div class="dashboard-stat" style="background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%); color: white;">
+                        <div class="dashboard-stat-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="dashboard-stat-value">@DateTime.Now.ToString("MMM")</div>
+                        <div class="dashboard-stat-label">Current Month</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="dashboard-card">
+                    <div class="dashboard-stat" style="background: linear-gradient(135deg, #6f42c1 0%, #007bff 100%); color: white;">
+                        <div class="dashboard-stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="dashboard-stat-value">@DateTime.Now.Year</div>
+                        <div class="dashboard-stat-label">Current Year</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 col-lg-8 mb-4 mb-lg-0">
+                <div class="dashboard-card">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0"><i class="fas fa-history me-2"></i>Recent Products</h3>
+                        <a asp-controller="Products" asp-action="Index" class="btn btn-sm btn-outline-light">
+                            <i class="fas fa-external-link-alt me-1"></i>View All
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (Model.RecentProducts != null && Model.RecentProducts.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var product in Model.RecentProducts)
+                                {
+                                    <a href="@Url.Action("Details", "Products", new { id = product.Id })" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="mb-1">@product.Name</h5>
+                                                <div>
+                                                    <span class="product-category category-@product.Category.ToLower()">@product.Category</span>
+                                                    <small class="text-muted ms-2">
+                                                        <i class="fas fa-calendar me-1"></i>@product.ProductionDate.ToShortDateString()
+                                                    </small>
+                                                    <small class="text-muted ms-2">
+                                                        <i class="fas fa-weight-hanging me-1"></i>@product.Quantity @product.Unit
+                                                    </small>
+                                                </div>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-tractor me-1"></i>Farm: @(product.Farmer?.FarmName ?? "Unknown")
+                                                </small>
+                                            </div>
+                                            <div>
+                                                <span class="badge bg-success rounded-pill">New</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="p-4 text-center">
+                                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                <p>No products added yet.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="dashboard-card mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0"><i class="fas fa-users me-2"></i>Recent Farmers</h3>
+                        <a asp-controller="Farmers" asp-action="Index" class="btn btn-sm btn-outline-light">
+                            <i class="fas fa-external-link-alt me-1"></i>View All
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (Model.RecentFarmers != null && Model.RecentFarmers.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var farmer in Model.RecentFarmers)
+                                {
+                                    <a href="@Url.Action("Details", "Farmers", new { id = farmer.Id })" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">@farmer.FarmName</h5>
+                                            <small><i class="fas fa-calendar me-1"></i>@farmer.RegistrationDate.ToShortDateString()</small>
+                                        </div>
+                                        <p class="mb-1"><i class="fas fa-map-marker-alt me-1"></i>@farmer.Address</p>
+                                        <small><i class="fas fa-phone me-1"></i>@farmer.ContactNumber</small>
+                                    </a>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="p-4 text-center">
+                                <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                                <p>No farmers registered yet.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a asp-controller="Farmers" asp-action="Create" class="btn btn-success action-btn action-btn-success">
+                        <i class="fas fa-user-plus me-2"></i>Add New Farmer
+                    </a>
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-primary action-btn action-btn-primary">
+                        <i class="fas fa-search me-2"></i>Browse All Products
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header bg-light">
+                <h3 class="mb-0"><i class="fas fa-tasks me-2"></i>Quick Actions</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 text-center dashboard-card">
+                            <div class="card-body">
+                                <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                                <h5>Add Farmer</h5>
+                                <p class="text-muted small">Register a new farmer in the system</p>
+                                <a asp-controller="Farmers" asp-action="Create" class="btn btn-sm btn-outline-success mt-2">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 text-center dashboard-card">
+                            <div class="card-body">
+                                <i class="fas fa-list fa-3x text-primary mb-3"></i>
+                                <h5>Manage Farmers</h5>
+                                <p class="text-muted small">View and edit farmer profiles</p>
+                                <a asp-controller="Farmers" asp-action="Index" class="btn btn-sm btn-outline-primary mt-2">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 text-center dashboard-card">
+                            <div class="card-body">
+                                <i class="fas fa-search fa-3x text-info mb-3"></i>
+                                <h5>Browse Products</h5>
+                                <p class="text-muted small">Search and filter all products</p>
+                                <a asp-controller="Products" asp-action="Index" class="btn btn-sm btn-outline-info mt-2">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 text-center dashboard-card">
+                            <div class="card-body">
+                                <i class="fas fa-cog fa-3x text-secondary mb-3"></i>
+                                <h5>Settings</h5>
+                                <p class="text-muted small">Manage your account settings</p>
+                                <a asp-area="Identity" asp-page="/Account/Manage/Index" class="btn btn-sm btn-outline-secondary mt-2">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

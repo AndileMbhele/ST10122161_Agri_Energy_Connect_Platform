@@ -1,0 +1,146 @@
+@model ST10122162_Agri_Energy_Connect_Platform.Models.Farmer
+
+@{
+    ViewData["Title"] = "Farmer Details";
+}
+
+<div class="dashboard-header text-center py-4 px-3 mb-4">
+    <div class="container">
+        <h1 class="dashboard-welcome">Farmer Details</h1>
+        <p class="dashboard-subtitle lead">
+            Viewing detailed information for @Model.FarmName
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-card h-100">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0"><i class="fas fa-tractor me-2"></i>Farm Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="display-1 text-success mb-3">
+                            <i class="fas fa-tractor"></i>
+                        </div>
+                        <h2 class="mb-3">@Model.FarmName</h2>
+                        <div class="badge bg-primary rounded-pill p-2 mb-3">
+                            <i class="fas fa-leaf me-1"></i>@Model.Products.Count Products
+                        </div>
+                    </div>
+
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-map-marker-alt me-2 text-danger"></i>Address</span>
+                            <strong>@Model.Address</strong>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-phone me-2 text-primary"></i>Contact</span>
+                            <strong>@Model.ContactNumber</strong>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-calendar-alt me-2 text-info"></i>Registered</span>
+                            <strong>@Model.RegistrationDate.ToShortDateString()</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="dashboard-card mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0"><i class="fas fa-cogs me-2 text-primary"></i>Farm Management</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-edit fa-3x text-primary mb-3"></i>
+                                    <h5 class="card-title">Update Farm Information</h5>
+                                    <p class="card-text small text-muted">Edit farm details, contact information, and address.</p>
+                                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary action-btn mt-2">
+                                        <i class="fas fa-edit me-2"></i>Edit Farm
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-boxes fa-3x text-success mb-3"></i>
+                                    <h5 class="card-title">Manage Products</h5>
+                                    <p class="card-text small text-muted">View and manage all products from this farm.</p>
+                                    <a asp-controller="Products" asp-action="Index" asp-route-farmerId="@Model.Id" class="btn btn-success action-btn mt-2">
+                                        <i class="fas fa-boxes me-2"></i>View Products
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0"><i class="fas fa-leaf me-2"></i>Recent Products</h3>
+                    <span class="badge bg-light text-primary rounded-pill">
+                        @Model.Products.Count Total
+                    </span>
+                </div>
+                <div class="card-body">
+                    @if (Model.Products != null && Model.Products.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var product in Model.Products.OrderByDescending(p => p.DateAdded).Take(5))
+                            {
+                                <a href="@Url.Action("Details", "Products", new { id = product.Id })" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">@product.Name</h5>
+                                            <div>
+                                                <span class="badge bg-success me-2">@product.Category</span>
+                                                <span class="text-muted small">@product.Quantity @product.Unit</span>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-light text-dark">
+                                                <i class="fas fa-calendar-alt me-1"></i>@product.ProductionDate.ToShortDateString()
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                        <div class="text-center mt-3">
+                            <a asp-controller="Products" asp-action="Index" asp-route-farmerId="@Model.Id" class="btn btn-outline-primary">
+                                <i class="fas fa-list me-2"></i>View All Products
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <h4>No Products Yet</h4>
+                            <p class="text-muted mb-3">This farm hasn't added any products yet.</p>
+                            <a asp-controller="Products" asp-action="Create" class="btn btn-success action-btn">
+                                <i class="fas fa-plus me-2"></i>Add First Product
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

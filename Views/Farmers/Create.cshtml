@@ -1,0 +1,107 @@
+@model ST10122162_Agri_Energy_Connect_Platform.ViewModels.FarmerCreateViewModel
+
+@{
+    ViewData["Title"] = "Add New Farmer";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h1 class="h3 mb-0">Add New Farmer</h1>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <h4 class="mb-3">Farm Information</h4>
+                        <div class="mb-3">
+                            <label asp-for="FarmName" class="form-label"></label>
+                            <input asp-for="FarmName" class="form-control" />
+                            <span asp-validation-for="FarmName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label"></label>
+                            <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="ContactNumber" class="form-label"></label>
+                            <input asp-for="ContactNumber" class="form-control" />
+                            <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                        </div>
+
+                        <hr class="my-4" />
+                        
+                        <div class="form-check mb-3">
+                            <input asp-for="CreateAccount" class="form-check-input" />
+                            <label asp-for="CreateAccount" class="form-check-label"></label>
+                        </div>
+                        
+                        <div id="accountFields">
+                            <h4 class="mb-3">User Account Information</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="FirstName" class="form-label"></label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="LastName" class="form-label"></label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label"></label>
+                                <input asp-for="Password" class="form-control" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="ConfirmPassword" class="form-label"></label>
+                                <input asp-for="ConfirmPassword" class="form-control" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-success">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function () {
+            // Toggle account fields visibility based on checkbox
+            function toggleAccountFields() {
+                if ($("#CreateAccount").is(":checked")) {
+                    $("#accountFields").show();
+                } else {
+                    $("#accountFields").hide();
+                }
+            }
+            
+            // Initial state
+            toggleAccountFields();
+            
+            // On change
+            $("#CreateAccount").change(function () {
+                toggleAccountFields();
+            });
+        });
+    </script>
+}

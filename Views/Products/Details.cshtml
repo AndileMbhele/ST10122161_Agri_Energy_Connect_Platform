@@ -1,0 +1,132 @@
+@model ST10122162_Agri_Energy_Connect_Platform.Models.Product
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ST10122162_Agri_Energy_Connect_Platform.Models.ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Product Details";
+    var isEmployee = User.IsInRole("Employee");
+    var isFarmer = User.IsInRole("Farmer");
+}
+
+<div class="dashboard-header text-center py-4 px-3 mb-4">
+    <div class="container">
+        <h1 class="dashboard-welcome">Product Details</h1>
+        <p class="dashboard-subtitle lead">
+            Viewing detailed information for @Model.Name
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-card h-100">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Quick Info</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <span class="product-category category-@Model.Category.ToLower() d-inline-block mb-2">@Model.Category</span>
+                        <h2 class="mb-3">@Model.Name</h2>
+                        <div class="badge bg-success rounded-pill p-2 mb-3">
+                            <i class="fas fa-weight-hanging me-1"></i>@Model.Quantity @Model.Unit
+                        </div>
+                    </div>
+
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-calendar-alt me-2 text-primary"></i>Production Date</span>
+                            <strong>@Model.ProductionDate.ToShortDateString()</strong>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-clock me-2 text-primary"></i>Added On</span>
+                            <strong>@Model.DateAdded.ToShortDateString()</strong>
+                        </div>
+                        @if (isEmployee)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-tractor me-2 text-primary"></i>Farm</span>
+                                <a asp-controller="Farmers" asp-action="Details" asp-route-id="@Model.FarmerId" class="fw-bold text-decoration-none">
+                                    @(Model.Farmer?.FarmName ?? "Unknown")
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="dashboard-card mb-4">
+                <div class="card-header bg-light">
+                    <h3 class="mb-0"><i class="fas fa-file-alt me-2 text-primary"></i>Product Details</h3>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="mb-4">
+                            <h4 class="mb-3">Description</h4>
+                            <p class="lead">@Model.Description</p>
+                        </div>
+                        <hr />
+                    }
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-tag me-2 text-success"></i>Category</h5>
+                                    <p class="card-text">@Model.Category</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-weight-hanging me-2 text-success"></i>Quantity</h5>
+                                    <p class="card-text">@Model.Quantity @Model.Unit</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        @if (!isEmployee)
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary action-btn me-2">
+                                <i class="fas fa-edit me-2"></i>Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger action-btn">
+                                <i class="fas fa-trash me-2"></i>Delete
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @if (isFarmer)
+            {
+                <div class="dashboard-card">
+                    <div class="card-header bg-light">
+                        <h3 class="mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i>Tips</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-success mb-0">
+                            <h5><i class="fas fa-leaf me-2"></i>Product Management Tips</h5>
+                            <p>Keep your product information up-to-date to ensure accurate inventory tracking. Regular updates help maintain product quality and visibility.</p>
+                            <hr>
+                            <p class="mb-0">Need to make changes? Use the Edit button to update this product's information.</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

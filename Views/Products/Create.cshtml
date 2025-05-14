@@ -1,0 +1,123 @@
+@model ST10122162_Agri_Energy_Connect_Platform.Models.Product
+
+@{
+    ViewData["Title"] = "Add New Product";
+}
+
+<div class="dashboard-header text-center py-4 px-3 mb-4">
+    <div class="container">
+        <h1 class="dashboard-welcome">Add New Product</h1>
+        <p class="dashboard-subtitle lead">
+            Create a new product for your farm inventory
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="dashboard-card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Product Information</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Name" class="form-control" placeholder="Product Name" />
+                                    <label asp-for="Name"><i class="fas fa-tag me-1"></i>Product Name</label>
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Category" class="form-label"><i class="fas fa-list me-1"></i>Category</label>
+                                    <select asp-for="Category" asp-items="ViewBag.Categories" class="form-select"></select>
+                                    <span asp-validation-for="Category" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="ProductionDate" class="form-control" type="date" placeholder="Production Date" />
+                                    <label asp-for="ProductionDate"><i class="fas fa-calendar-alt me-1"></i>Production Date</label>
+                                    <span asp-validation-for="ProductionDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Quantity" class="form-control" placeholder="Quantity" />
+                                    <label asp-for="Quantity"><i class="fas fa-weight-hanging me-1"></i>Quantity</label>
+                                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Unit" class="form-control" placeholder="Unit" />
+                                    <label asp-for="Unit"><i class="fas fa-ruler me-1"></i>Unit</label>
+                                    <span asp-validation-for="Unit" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <textarea asp-for="Description" class="form-control" placeholder="Description" style="height: 120px"></textarea>
+                            <label asp-for="Description"><i class="fas fa-align-left me-1"></i>Description</label>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <div class="form-text">Provide a detailed description of your product (optional).</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to List
+                            </a>
+                            <button type="submit" class="btn btn-success action-btn action-btn-success">
+                                <i class="fas fa-save me-2"></i>Create Product
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header bg-light">
+                    <h3 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>Tips for Adding Products</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-clipboard-check fa-3x text-success mb-3"></i>
+                                <h5>Be Accurate</h5>
+                                <p class="small text-muted">Ensure all product details are accurate for proper inventory management.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-calendar-day fa-3x text-primary mb-3"></i>
+                                <h5>Production Date</h5>
+                                <p class="small text-muted">Always include the correct production date for tracking purposes.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-file-alt fa-3x text-info mb-3"></i>
+                                <h5>Detailed Description</h5>
+                                <p class="small text-muted">Add a thorough description to help identify your product.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,296 @@
+@model IEnumerable<ST10122162_Agri_Energy_Connect_Platform.Models.Product>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ST10122162_Agri_Energy_Connect_Platform.Models.ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Products";
+    var isEmployee = User.IsInRole("Employee");
+    var isFarmer = User.IsInRole("Farmer");
+    var user = await UserManager.GetUserAsync(User);
+    var farmName = isFarmer && user?.Farmer != null ? user.Farmer.FarmName : "All Farms";
+}
+
+<div class="dashboard-header text-center py-4 px-3 mb-4">
+    <div class="container">
+        <h1 class="dashboard-welcome">Product Management</h1>
+        <p class="dashboard-subtitle lead">
+            @if (isFarmer)
+            {
+                <span>Manage your farm products and inventory</span>
+            }
+            else
+            {
+                <span>Browse and filter products from all farmers</span>
+            }
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                @if (isFarmer)
+                {
+                    <span><i class="fas fa-leaf me-2 text-success"></i>Your Products</span>
+                }
+                else
+                {
+                    <span><i class="fas fa-boxes me-2 text-primary"></i>All Products</span>
+                }
+            </h2>
+            <p class="text-muted">
+                @if (isFarmer)
+                {
+                    <span>Managing products for <strong>@farmName</strong></span>
+                }
+                else
+                {
+                    <span>Viewing products from all registered farmers</span>
+                }
+            </p>
+        </div>
+        @if (isFarmer)
+        {
+            <a asp-action="Create" class="btn btn-success action-btn action-btn-success">
+                <i class="fas fa-plus me-2"></i>Add New Product
+            </a>
+        }
+    </div>
+
+    <div class="dashboard-card mb-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-filter me-2 text-primary"></i>Filter Products</h4>
+            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+        <div class="collapse show" id="filterCollapse">
+            <div class="card-body">
+                <form method="get" asp-action="Index" class="row g-3">
+                    @if (isEmployee)
+                    {
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <select name="farmerId" id="farmerId" class="form-select">
+                                    <option value="">All Farmers</option>
+                                    @foreach (var farmer in ViewBag.Farmers)
+                                    {
+                                        <option value="@farmer.Value" selected="@(ViewBag.SelectedFarmerId == farmer.Value)">@farmer.Text</option>
+                                    }
+                                </select>
+                                <label for="farmerId"><i class="fas fa-tractor me-1"></i>Farmer</label>
+                            </div>
+                        </div>
+                    }
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select name="category" id="category" class="form-select">
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    <option value="@category.Text" selected="@(ViewBag.SelectedCategory == category.Text)">@category.Text</option>
+                                }
+                            </select>
+                            <label for="category"><i class="fas fa-tag me-1"></i>Category</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <input type="date" id="startDate" name="startDate" class="form-control" value="@(ViewBag.StartDate?.ToString("yyyy-MM-dd"))" />
+                            <label for="startDate"><i class="fas fa-calendar-alt me-1"></i>Start Date</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <input type="date" id="endDate" name="endDate" class="form-control" value="@(ViewBag.EndDate?.ToString("yyyy-MM-dd"))" />
+                            <label for="endDate"><i class="fas fa-calendar-alt me-1"></i>End Date</label>
+                        </div>
+                    </div>
+                    <div class="col-12 text-end mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-undo me-1"></i>Clear Filters
+                        </a>
+                        <button type="submit" class="btn btn-primary action-btn">
+                            <i class="fas fa-search me-1"></i>Apply Filters
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="mb-0"><i class="fas fa-list me-2 text-success"></i>Product List</h4>
+                    <p class="text-muted mb-0">Showing @Model.Count() products</p>
+                </div>
+                <div class="btn-group">
+                    <button id="viewGrid" class="btn btn-outline-primary active">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button id="viewList" class="btn btn-outline-primary">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="gridView" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="dashboard-card product-card h-100">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <span class="product-category category-@item.Category.ToLower()">@item.Category</span>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>@item.ProductionDate.ToShortDateString()
+                            </small>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">@item.Name</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="badge bg-success rounded-pill">
+                                        <i class="fas fa-weight-hanging me-1"></i>@item.Quantity @item.Unit
+                                    </span>
+                                </div>
+                                @if (isEmployee)
+                                {
+                                    <div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-tractor me-1"></i>@(item.Farmer?.FarmName ?? "Unknown")
+                                        </small>
+                                    </div>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <p class="card-text text-muted small mb-3">@(item.Description?.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description)</p>
+                            }
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-flex justify-content-between">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye me-1"></i>Details
+                                </a>
+                                <div>
+                                    @if (!isEmployee)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div id="listView" class="dashboard-card mb-4" style="display: none;">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.Name)</th>
+                            <th>@Html.DisplayNameFor(model => model.Category)</th>
+                            <th>@Html.DisplayNameFor(model => model.ProductionDate)</th>
+                            <th>@Html.DisplayNameFor(model => model.Quantity)</th>
+                            @if (isEmployee)
+                            {
+                                <th>Farm</th>
+                            }
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="align-middle">
+                                    <strong>@item.Name</strong>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="product-category category-@item.Category.ToLower()">@item.Category</span>
+                                </td>
+                                <td class="align-middle">@item.ProductionDate.ToShortDateString()</td>
+                                <td class="align-middle">@item.Quantity @item.Unit</td>
+                                @if (isEmployee)
+                                {
+                                    <td class="align-middle">@(item.Farmer?.FarmName ?? "Unknown")</td>
+                                }
+                                <td class="align-middle text-end">
+                                    <div class="btn-group">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (!isEmployee)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="dashboard-card text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4>No Products Found</h4>
+            <p class="text-muted mb-4">No products match the selected filter criteria.</p>
+
+            @if (isFarmer)
+            {
+                <div>
+                    <a asp-action="Create" class="btn btn-success action-btn action-btn-success">
+                        <i class="fas fa-plus me-2"></i>Add New Product
+                    </a>
+                </div>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn btn-primary">
+                    <i class="fas fa-undo me-2"></i>Clear Filters
+                </a>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // View toggle functionality
+            $('#viewGrid').click(function () {
+                $('#gridView').show();
+                $('#listView').hide();
+                $(this).addClass('active');
+                $('#viewList').removeClass('active');
+            });
+
+            $('#viewList').click(function () {
+                $('#listView').show();
+                $('#gridView').hide();
+                $(this).addClass('active');
+                $('#viewGrid').removeClass('active');
+            });
+        });
+    </script>
+}
